@@ -22,9 +22,12 @@ jobs:
           gem install bundler
           bundle install --jobs 4 --retry 3
 
-      - name: Build and Test
+      - name: Get latest tag
+        id: get_latest_tag
         run: |
-          # Replace this with your own build and test commands
+          latest_tag=$(git describe --abbrev=0 --tags)
+          echo "::set-output name=tag::$latest_tag"
+
 
       - name: Create Release
         id: create_release
@@ -32,8 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.sha }}
-          release_name: Release ${{ github.sha }}
+          tag_name: ${{ steps.get_latest_tag.outputs.tag }}
+          release_name: Release ${{ steps.get_latest_tag.outputs.tag }}
           body: |
             🎉 New Features:
             
