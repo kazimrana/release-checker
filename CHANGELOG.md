@@ -1,4 +1,13 @@
-# 0.4.0 (2023-06-06)
+## [0.4.1](https://github.com/kazimrana/release-checker/compare/v0.4.0...v0.4.1) (2023-06-06)
+
+
+### Bug Fixes
+
+* fixing ([e305396](https://github.com/kazimrana/release-checker/commit/e3053963cd413123b79dfd61b7ea462c8ab3640b))
+
+
+
+# [0.4.0](https://github.com/kazimrana/release-checker/compare/8bac56b2557e3251fce81eb5d0e453f03aef126b...v0.4.0) (2023-06-06)
 
 
 ### Bug Fixes
