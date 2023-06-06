@@ -21,10 +21,11 @@ jobs:
           tag_name: v${{ github.sha }}
           release_name: Release ${{ github.sha }}
           body: |
-            ${{ steps.get_commits.outputs.commits_body }}
+            ${{ steps.Changelog.outputs.changelog }}
 
-      - name: Get Commits
-        id: get_commits
-        run: |
-          commits=$(git log --pretty=format:"%h - %s by %an" ${{ github.sha }}...HEAD)
-          echo "::set-output name=commits_body::${commits}"
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
+        with:
+            from-tag: v12.6.2
+            to-tag: HEAD
