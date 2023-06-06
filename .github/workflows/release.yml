@@ -12,6 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Get Changelog
+        id: changelog
+        run: |
+          changelog=$(git log --pretty=format:"- %s" --no-merges HEAD...origin/master)
+          echo "::set-output name=changelog::$changelog"
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -20,21 +26,4 @@ jobs:
         with:
           tag_name: v${{ github.sha }}
           release_name: Release ${{ github.sha }}
-          body: |
-            🎉 New Features:
-            
-            - Add feature 1
-            
-            - Add feature 2
-            
-            🔧 Improvements:
-            
-            - Fix issue with X
-            
-            - Improve Y performance
-            
-            🐛 Bug Fixes:
-            
-            - Fix bug 1
-            
-            - Fix bug 2
+          body: ${{ steps.changelog.outputs.changelog }}
