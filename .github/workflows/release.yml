@@ -1,33 +1,53 @@
-name: Release
+name: Create Release
 on:
   push:
     branches:
       - master
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7.4 # Change this to match your Ruby version
 
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle install --jobs 4 --retry 3
+          bundle install
 
-      - name: Create Release
-        id: create_release
+      - name: Generate Release Notes
+        id: release-notes
+        run: |
+          # Run any script or command to generate your changelogs
+          # and store the result in the RELEASE_NOTES environment variable
+          export RELEASE_NOTES=$(bundle exec rake changelogs:generate)
+          echo "Release notes: $RELEASE_NOTES"
+
+      - name: Create GitHub Release
+        id: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          release_name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+          tag_name: v${{ github.sha }}
+          release_name: Release ${{ github.sha }}
+          body: |
+            :rocket: New Features and Enhancements
+            
+            ${{ env.RELEASE_NOTES }}
+            
+            :bug: Bug Fixes
+            
+            - None
+
+      - name: Update Changelog
+        run: |
+          # Run any script or command to update your changelogs file
+          # with the new release information
+          bundle exec rake changelogs:update
