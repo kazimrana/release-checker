@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -22,9 +22,17 @@ jobs:
           gem install bundler
           bundle install --jobs 4 --retry 3
 
-      - name: Build and Test
-        run: |
-          # Replace this with your own build and test commands
+      - name: Get latest release tag
+        id: get_latest_tag
+        run: echo ::set-output name=tag::$(git describe --tags --abbrev=0)
+
+      - name: Extract version number
+        id: extract_version
+        run: echo ::set-output name=version::${{ steps.get_latest_tag.outputs.tag | replace('release-', '') }}
+
+      - name: Increment version number
+        id: increment_version
+        run: echo ::set-output name=next_version::$(ruby -e "require 'rubygems'; require 'semantic_version'; puts Semantic::Version.new('${{ steps.extract_version.outputs.version }}').increment('patch')")
 
       - name: Create Release
         id: create_release
@@ -32,24 +40,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: release-${{ steps.increment_version.outputs.next_version }}
+          release_name: Release ${{ steps.increment_version.outputs.next_version }}
           body: |
             🎉 New Features:
-            
+
             - Add feature 1
-            
+
             - Add feature 2
-            
+
             🔧 Improvements:
-            
+
             - Fix issue with X
-            
+
             - Improve Y performance
-            
+
             🐛 Bug Fixes:
-            
+
             - Fix bug 1
-            
+
             - Fix bug 2
 
+            Commit Information:
+            Commit Hash: ${{ github.sha }}
+            Commit Message: ${{ github.event.head_commit.message }}
