@@ -22,49 +22,12 @@ jobs:
           gem install bundler
           bundle install --jobs 4 --retry 3
 
-      - name: Get latest release tag
-        id: get_latest_tag
-        run: echo ::set-output name=tag::$(git describe --tags --abbrev=0)
-
-      - name: Extract version number
-        id: extract_version
-        run: echo ::set-output name=version::${{ steps.get_latest_tag.outputs.tag }}
-
-      - name: Remove 'release-' prefix from version
-        id: remove_prefix
-        run: echo ::set-output name=version_without_prefix::${{ steps.extract_version.outputs.version }}
-
-      - name: Increment version number
-        id: increment_version
-        run: echo ::set-output name=next_version::$(ruby -e "require 'rubygems'; require 'semantic_version'; puts Semantic::Version.new('${{ steps.remove_prefix.outputs.version_without_prefix }}').increment('patch')")
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CHANGELOG_RELEASE }}
         with:
-          tag_name: release-${{ steps.increment_version.outputs.next_version }}
-          release_name: Release ${{ steps.increment_version.outputs.next_version }}
-          body: |
-            🎉 New Features:
-
-            - Add feature 1
-
-            - Add feature 2
-
-            🔧 Improvements:
-
-            - Fix issue with X
-
-            - Improve Y performance
-
-            🐛 Bug Fixes:
-
-            - Fix bug 1
-
-            - Fix bug 2
-
-            Commit Information:
-            Commit Hash: ${{ github.sha }}
-            Commit Message: ${{ github.event.head_commit.message }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          release_name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
