@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.4 # Change this to match your Ruby version
+          ruby-version: 2.7.x # Change this to match your Ruby version
 
       - name: Install dependencies
         run: |
@@ -28,11 +28,15 @@ jobs:
 
       - name: Extract version number
         id: extract_version
-        run: echo ::set-output name=version::${{ steps.get_latest_tag.outputs.tag | replace('release-', '') }}
+        run: echo ::set-output name=version::${{ steps.get_latest_tag.outputs.tag }}
+
+      - name: Remove 'release-' prefix from version
+        id: remove_prefix
+        run: echo ::set-output name=version::${{ steps.extract_version.outputs.version =~ 'release-(.*)' && format('{0}', steps.extract_version.outputs.version[1]) || steps.extract_version.outputs.version }}
 
       - name: Increment version number
         id: increment_version
-        run: echo ::set-output name=next_version::$(ruby -e "require 'rubygems'; require 'semantic_version'; puts Semantic::Version.new('${{ steps.extract_version.outputs.version }}').increment('patch')")
+        run: echo ::set-output name=next_version::$(ruby -e "require 'rubygems'; require 'semantic_version'; puts Semantic::Version.new('${{ steps.remove_prefix.outputs.version }}').increment('patch')")
 
       - name: Create Release
         id: create_release
