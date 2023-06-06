@@ -1,57 +1,27 @@
-name: Release
+name: Releases
 on:
   push:
     branches:
       - master
 
 jobs:
-  build:
+  changelog:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v2
+      - name: conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3.7.1
         with:
-          ruby-version: 2.7.4 # Change this to match your Ruby version
+          github-token: ${{ secrets.github_token }}
 
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-
-      - name: Get latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git describe --abbrev=0 --tags)
-          echo "::set-output name=tag::$latest_tag"
-
-
-      - name: Create Release
-        id: create_release
+      - name: create release
         uses: actions/create-release@v1
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.github_token }}
         with:
-          tag_name: ${{ steps.get_latest_tag.outputs.tag }}
-          release_name: Release ${{ steps.get_latest_tag.outputs.tag }}
-          body: |
-            🎉 New Features:
-            
-            - Add feature 1
-            
-            - Add feature 2
-            
-            🔧 Improvements:
-            
-            - Fix issue with X
-            
-            - Improve Y performance
-            
-            🐛 Bug Fixes:
-            
-            - Fix bug 1
-            
-            - Fix bug 2
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          release_name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
