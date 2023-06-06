@@ -1,53 +1,54 @@
-name: Create Release
+name: Release
 on:
   push:
     branches:
       - master
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 2.7.4
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.4 # Change this to match your Ruby version
 
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle install
+          bundle install --jobs 4 --retry 3
 
-      - name: Generate Release Notes
-        id: release-notes
+      - name: Build and Test
         run: |
-          # Run any script or command to generate your changelogs
-          # and store the result in the RELEASE_NOTES environment variable
-          export RELEASE_NOTES=$(bundle exec rake changelogs:generate)
-          echo "Release notes: $RELEASE_NOTES"
+          # Replace this with your own build and test commands
 
-      - name: Create GitHub Release
-        id: create-release
+      - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.sha }}
-          release_name: Release ${{ github.sha }}
+          tag_name: v${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           body: |
-            :rocket: New Features and Enhancements
+            🎉 New Features:
             
-            ${{ env.RELEASE_NOTES }}
+            - Add feature 1
             
-            :bug: Bug Fixes
+            - Add feature 2
             
-            - None
-
-      - name: Update Changelog
-        run: |
-          # Run any script or command to update your changelogs file
-          # with the new release information
-          bundle exec rake changelogs:update
+            🔧 Improvements:
+            
+            - Fix issue with X
+            
+            - Improve Y performance
+            
+            🐛 Bug Fixes:
+            
+            - Fix bug 1
+            
+            - Fix bug 2
