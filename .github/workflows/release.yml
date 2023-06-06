@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.x # Change this to match your Ruby version
+          ruby-version: 2.7.4 # Change this to match your Ruby version
 
       - name: Install dependencies
         run: |
