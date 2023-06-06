@@ -32,15 +32,11 @@ jobs:
 
       - name: Remove 'release-' prefix from version
         id: remove_prefix
-        run: echo ::set-output name=version::${{ steps.extract_version.outputs.version }}
-      
-      - name: Extract version without prefix
-        id: remove_prefix
-        run: echo ::set-output name=version::${{ steps.extract_version.outputs.version }}
-      
+        run: echo ::set-output name=version_without_prefix::${{ steps.extract_version.outputs.version }}
+
       - name: Increment version number
         id: increment_version
-        run: echo ::set-output name=next_version::$(ruby -e "require 'rubygems'; require 'semantic_version'; puts Semantic::Version.new('${{ steps.remove_prefix.outputs.version }}').increment('patch')")
+        run: echo ::set-output name=next_version::$(ruby -e "require 'rubygems'; require 'semantic_version'; puts Semantic::Version.new('${{ steps.remove_prefix.outputs.version_without_prefix }}').increment('patch')")
 
       - name: Create Release
         id: create_release
