@@ -1,5 +1,20 @@
 # Changelog
 
+## [12.10.0](https://github.com/kazimrana/release-checker/compare/v12.9.1...v12.10.0) (2023-06-07)
+
+
+### 🚀 Features
+
+* Add new features ([baa537d](https://github.com/kazimrana/release-checker/commit/baa537de8b0b6af59664c9f6a9d90acf6a53117a))
+
+
+### 🐛 Bug Fixes
+
+* Add a fix ([c83056f](https://github.com/kazimrana/release-checker/commit/c83056f61fd565c8ef4e4762c5c45403ec466a9a))
+* Add fix b ([9cc4ffd](https://github.com/kazimrana/release-checker/commit/9cc4ffda3369eba044e0361eaafa8c01184f334c))
+* Fix bugs ([585bfd2](https://github.com/kazimrana/release-checker/commit/585bfd23edb2abe6f7a111ef3c7b35b3a83638e2))
+* Need a fix for this ([e86a3ed](https://github.com/kazimrana/release-checker/commit/e86a3eddc2c4e170f4c3f96f934937fd975b8910))
+
 ## [12.9.1](https://github.com/kazimrana/release-checker/compare/v12.9.0...v12.9.1) (2023-06-07)
 
 
