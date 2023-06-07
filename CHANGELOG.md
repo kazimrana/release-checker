@@ -1,5 +1,12 @@
 # Changelog
 
+## [12.9.1](https://github.com/kazimrana/release-checker/compare/v12.9.0...v12.9.1) (2023-06-07)
+
+
+### 🐛 Bug Fixes
+
+* Fix new bug ([5d6ff8a](https://github.com/kazimrana/release-checker/commit/5d6ff8a6bd4d98747f98d7548fb0203091f6b20f))
+
 ## [12.9.0](https://github.com/kazimrana/release-checker/compare/v12.8.1...v12.9.0) (2023-06-07)
 
 
