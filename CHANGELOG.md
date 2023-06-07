@@ -1,5 +1,12 @@
 # Changelog
 
+## [12.8.1](https://github.com/kazimrana/release-checker/compare/v12.8.0...v12.8.1) (2023-06-07)
+
+
+### Bug Fixes
+
+* fixing it-2 ([e337b33](https://github.com/kazimrana/release-checker/commit/e337b3380153303af3504ae025c4157ecbeee573))
+
 ## [12.8.0](https://github.com/kazimrana/release-checker/compare/v12.7.0...v12.8.0) (2023-06-07)
 
 
