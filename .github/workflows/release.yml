@@ -1,58 +1,13 @@
-name: Generate Release Notes
-
+name: release-please
 on:
   push:
     branches:
       - master
-
 jobs:
-  release_notes:
+  release-please:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Generate Release Notes
-        id: release
-        run: |
-          # Retrieve the previous tag
-          PREVIOUS_TAG=$(git describe --abbrev=0 --tags HEAD^)
-          
-          # Get the commits since the previous tag
-          COMMITS=$(git log --pretty=format:"%h %s" "$PREVIOUS_TAG"..HEAD)
-          
-          # Initialize the release notes variables
-          BUG_FIX=""
-          FEATURES=""
-          
-          # Categorize the commits
-          while IFS= read -r COMMIT; do
-            if [[ $COMMIT == *"Bug fix"* ]]; then
-              BUG_FIX+="• ${COMMIT#* }"$'\n'
-            elif [[ $COMMIT == *"Feature"* ]]; then
-              FEATURES+="• ${COMMIT#* }"$'\n'
-            fi
-          done <<< "$COMMITS"
-          
-          # Create the release notes
-          RELEASE_NOTES=""
-          if [ -n "$BUG_FIX" ]; then
-            RELEASE_NOTES+="Bug Fixes:"$'\n'"$BUG_FIX"$'\n'
-          fi
-          if [ -n "$FEATURES" ]; then
-            RELEASE_NOTES+="Features:"$'\n'"$FEATURES"$'\n'
-          fi
-          
-          # Set the output variable for use in the next steps
-          echo "::set-output name=release_notes::$RELEASE_NOTES"
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: google-github-actions/release-please-action@v3
         with:
-          tag_name: ${{ github.sha }}
-          release_name: Release ${{ github.sha }}
-          body: ${{ steps.release.outputs.release_notes }}
+          release-type: terraform-module # Multiple release types are supported
+          default-branch: master
