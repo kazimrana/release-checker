@@ -8,9 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
-        id: release
         with:
           release-type: terraform-module
           default-branch: master
-          command: github-release
           changelog-types: '[{"type":"feat","section":"🚀 Features","hidden":false},{"type":"fix","section":"🐛 Bug Fixes","hidden":false}]'
