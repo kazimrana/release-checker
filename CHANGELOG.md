@@ -1,5 +1,13 @@
 # Changelog
 
+## [12.9.0](https://github.com/kazimrana/release-checker/compare/v12.8.1...v12.9.0) (2023-06-07)
+
+
+### 🚀 Features
+
+* Add config files ([a652afa](https://github.com/kazimrana/release-checker/commit/a652afafe53b13ffccffd23f4eec281eed693f23))
+* Add new feature A ([6d58c0f](https://github.com/kazimrana/release-checker/commit/6d58c0f50590bd8ccbe34a3bc0bd4479bc9807d0))
+
 ## [12.8.1](https://github.com/kazimrana/release-checker/compare/v12.8.0...v12.8.1) (2023-06-07)
 
 
