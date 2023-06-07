@@ -12,11 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Update CHANGELOG
+      - name: Generate Changelog
         id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
+        run: |
+          echo "::set-output name=changes::$(git log --oneline --pretty=format:'- %s')"
 
       - name: Create Release
         id: create_release
@@ -26,4 +25,5 @@ jobs:
         with:
           tag_name: v${{ github.sha }}
           release_name: Release ${{ github.sha }}
-          body: ${{ steps.changelog.outputs.changes }}
+          body: |
+            ${{ steps.changelog.outputs.changes }}
