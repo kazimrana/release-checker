@@ -15,7 +15,7 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          echo "::set-output name=changes::$(git log --pretty=format:'- [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H) - %s (%an)' --abbrev-commit)"
+          echo "::set-output name=changes::$(git log --pretty=format:'- [\`%h\`](https://github.com/$GITHUB_REPOSITORY/commit/%H) - %s (%an)' --abbrev-commit)"
 
       - name: Create Release
         id: create_release
