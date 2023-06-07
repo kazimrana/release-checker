@@ -1,43 +1,58 @@
-name: Release
+name: Generate Release Notes
+
 on:
   push:
     branches:
       - master
 
 jobs:
-  build:
+  release_notes:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Prepare CHANGELOG
+      - name: Generate Release Notes
+        id: release
         run: |
-          echo "${{ github.event.pull_request.body }}" | csplit -s - "/##/"
-          echo "# Changelog
-
-          ## ${{ env.VERSION }}
-          " >> CHANGELOG.tmp
-          grep "^*" xx01 >> CHANGELOG.tmp
-          grep -v "^# " CHANGELOG.md >> CHANGELOG.tmp
-          cp CHANGELOG.tmp CHANGELOG.md
-
-      - name: Prepare description
-        run: |
-          csplit -s CHANGELOG.md "/##/" {1}
-          cat xx01 > CHANGELOG.tmp
-
-      - name: Prepare tag
-        run: |
-          export TAG=$(head -1 CHANGELOG.tmp | cut -d' ' -f2)
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          # Retrieve the previous tag
+          PREVIOUS_TAG=$(git describe --abbrev=0 --tags HEAD^)
+          
+          # Get the commits since the previous tag
+          COMMITS=$(git log --pretty=format:"%h %s" "$PREVIOUS_TAG"..HEAD)
+          
+          # Initialize the release notes variables
+          BUG_FIX=""
+          FEATURES=""
+          
+          # Categorize the commits
+          while IFS= read -r COMMIT; do
+            if [[ $COMMIT == *"Bug fix"* ]]; then
+              BUG_FIX+="• ${COMMIT#* }"$'\n'
+            elif [[ $COMMIT == *"Feature"* ]]; then
+              FEATURES+="• ${COMMIT#* }"$'\n'
+            fi
+          done <<< "$COMMITS"
+          
+          # Create the release notes
+          RELEASE_NOTES=""
+          if [ -n "$BUG_FIX" ]; then
+            RELEASE_NOTES+="Bug Fixes:"$'\n'"$BUG_FIX"$'\n'
+          fi
+          if [ -n "$FEATURES" ]; then
+            RELEASE_NOTES+="Features:"$'\n'"$FEATURES"$'\n'
+          fi
+          
+          # Set the output variable for use in the next steps
+          echo "::set-output name=release_notes::$RELEASE_NOTES"
 
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TAG }}
-          release_name: ${{ env.TAG }}
-          body_path: CHANGELOG.tmp
+          tag_name: ${{ github.sha }}
+          release_name: Release ${{ github.sha }}
+          body: ${{ steps.release.outputs.release_notes }}
